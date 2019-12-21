@@ -1,7 +1,7 @@
 import random, os
 
 width = 100
-height = 50
+height = 40
 
 foreground = []
 background = []
@@ -74,12 +74,16 @@ title_mask = ["##__##__##                     ##_____#_##      ##_## ##_##      
 
 # Initialise foreground and background arrays
 for y in range(height):
-    line = []
-    foreground.append(line)
-    background.append(line)
-    output.append(line)
+    line_f = []
+    line_b = []
+    line_o = []
+    foreground.append(line_f)
+    background.append(line_b)
+    output.append(line_o)
     for x in range(width):
-            line.append(' ')
+        line_f.append(' ')
+        line_b.append(' ')
+        line_o.append(' ')
 
 # Initialise Mask
 for y in range(height):
@@ -146,18 +150,18 @@ for y in range(height):
 for i in range(300):
     x = random.randint(0, width - 1)
     y = random.randint(0, height - 1)
-    if not mask[y][x]:
-        background[y][x] = '*'
-
-# Layers
-for y in range(height):
-    for x in range(width):
-        output[y][x] = background[y][x]
-        if foreground[y][x] != ' ':
-            output[y][x] = foreground[y][x]
+    background[y][x] = '*'
 
 # Print
 def print_image():
+    # Layers
+    for y in range(height):
+        for x in range(width):
+            if not mask[y][x]:
+                output[y][x] = background[y][x]
+            if foreground[y][x] != ' ':
+                output[y][x] = foreground[y][x]
+
     for y in range(height):
         for x in range(width):
             print(output[y][x], end = '')
@@ -166,7 +170,18 @@ def print_image():
 def clear():
      _ = lambda: os.system('clear') #on Linux System
 
-for i in range(1000):
-    clear()
+for i in range(20):
+    os.system('cls' if os.name=='nt' else 'clear')
     print(str(i))
     print_image()
+    # Step background
+    for y in range(height - 2, -1 , -1):
+        for x in range(width):
+        #print("row " + str(y + 1) + " = " + str(y))
+            background[y + 1][x] = background[y][x]
+    # Generate top row background
+    background[0] = []
+    for k in range(width):
+        background[0].append(' ')
+    for j in range(random.randint(5,10)):
+        background[0][random.randint(0,width - 1)] = '*'
