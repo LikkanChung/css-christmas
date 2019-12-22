@@ -4,6 +4,8 @@ from PIL import Image, ImageFont, ImageDraw
 width = 100
 height = 40
 
+frame_count = 60
+
 foreground = []
 background = []
 mask = []
@@ -219,11 +221,16 @@ def print_image():
 def clear():
      _ = lambda: os.system('clear') #on Linux System
 
-for i in range(4):
+
+frames = []
+
+
+for i in range(frame_count):
     # os.system('cls' if os.name=='nt' else 'clear')
     # print(str(i))
     out_str = print_image()
-    print(str(i)  + " --->\n" + out_str)
+    # print(str(i)  + " --->\n" + out_str)
+    print("Progress: " + str(i) + "/" + str(frame_count))
     # Image
     img = Image.new("RGBA", (640, 480), (47, 60, 99))
     font = ImageFont.truetype("Inconsolata-Regular.ttf", 12)
@@ -231,8 +238,8 @@ for i in range(4):
     draw = ImageDraw.Draw(img)
     #w, h = draw.textsize(out_str, font)
     draw.multiline_text((20, 20), out_str, fill="white", font=font, anchor=None, spacing=0, align="left")
-
-    img.show()
+    frames.append(img)
+    #img.show()
     # Step background
     for y in range(height - 2, -1 , -1):
         for x in range(width):
@@ -244,3 +251,6 @@ for i in range(4):
         background[0].append(' ')
     for j in range(random.randint(2,5)):
         background[0][random.randint(0,width - 1)] = '*'
+
+
+frames[0].save('css.gif', format='GIF', append_images=frames[1:], save_all=True, duration=100, loop=0)
