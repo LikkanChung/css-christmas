@@ -1,4 +1,5 @@
 import random, os
+from PIL import Image, ImageFont, ImageDraw
 
 width = 100
 height = 40
@@ -9,7 +10,7 @@ mask = []
 output = []
 
 css_title_x_offset = 21
-css_title_y_offset = 19
+css_title_y_offset = 20
 css_title = ["                                                         ",
              "    _=[]+{}+{}[        {}]+![]+!![        ];$=_[5]+_[    ",
              "   1]+_[16]+_[1+      26]+_[6]+_[1+      29]+_[15]+_[5   ",
@@ -71,6 +72,32 @@ title_mask = ["##__##__##                     ##_____#_##      ##_## ##_##      
               "              #|#|#|#|#|#(_)#|#|#|#|#|#|#|#(_|#|#|#|#|#(_|#|#|_##                ",
               "              #|_|#|#|##\___/|_|#|_|#|_|##\__,_|_|_|##\__,_|\__|#                ",
               "              ###################################################                "]
+tree_y_offset = 27
+tree_x_offset = 0
+
+tree = ["                                                                                                    ",
+        "      A                                                                                    A       ",
+        "     /#\                                                                                  /#\       ",
+        "    //#\\\\                                                                                //#\\\\      ",
+        "   ///#\\\\\\                                                                     /\      ////#\\\\\\\\    ",
+        "  ////#\\\\\\\\                                                                   //\\\\      ///#\\\\\\     ",
+        " /////#\\\\\\\\\\                                                                  //\\\\    /////#\\\\\\\\\\   ",
+        "     |#|                                                                     ///\\\\\\ ///////#\\\\\\\\\\\\\\ ",
+        " ____|#|__________                                           __________________||         |#|       ",
+        "/                 \________________________                 /                    \________|#|_______",
+        "                   \                       \_______________/                      \                 "]
+
+tree_mask = ["                                                                                                    ",
+        "      A                                                                                    A       ",
+        "     /#\                                                                                  /#\       ",
+        "    //#\\\\                                                                                //#\\\\      ",
+        "   ///#\\\\\\                                                                     /\      ////#\\\\\\\\    ",
+        "  ////#\\\\\\\\                                                                   //\\\\      ///#\\\\\\     ",
+        " /////#\\\\\\\\\\                                                                  //\\\\    /////#\\\\\\\\\\   ",
+        "     |#|                                                                     ///\\\\\\ ///////#\\\\\\\\\\\\\\ ",
+        " ____|#|__________                                           __________________||         |#|       ",
+        "/#################\________________________                 /####################\________|#|_______",
+        "###################\#######################\_______________/######################\#################"]
 
 # Initialise foreground and background arrays
 for y in range(height):
@@ -108,8 +135,25 @@ for line in title_mask:
     for c in line:
         if c != ' ':
             mask[j][i] = True
-        else:
-            mask[j][i] = False
+        i += 1
+    j += 1
+
+# Draw trees
+j = tree_y_offset
+for line in tree:
+    i = tree_x_offset
+    for c in line:
+        foreground[j][i] = c
+        i += 1
+    j += 1
+
+# Mask Trees
+j = tree_y_offset
+for line in tree_mask:
+    i = tree_x_offset
+    for c in line:
+        if c != ' ':
+            mask[j][i] = True
         i += 1
     j += 1
 
@@ -129,8 +173,7 @@ for line in css_title_mask:
     for c in line:
         if c != ' ':
             mask[j][i] = True
-        else:
-            mask[j][i] = False
+
         i += 1
     j += 1
 
@@ -147,7 +190,7 @@ for y in range(height):
 #     for x in range(width):
 #         if not (mask[y][x]):
 #             background[y][x] = '+'
-for i in range(300):
+for i in range(100):
     x = random.randint(0, width - 1)
     y = random.randint(0, height - 1)
     background[y][x] = '*'
@@ -162,18 +205,34 @@ def print_image():
             if foreground[y][x] != ' ':
                 output[y][x] = foreground[y][x]
 
+    ret = ""
+
     for y in range(height):
         for x in range(width):
-            print(output[y][x], end = '')
-        print("")
+            #print(output[y][x], end = '')
+            ret = ret + output[y][x]
+        #print("")
+        ret = ret + '\n'
+
+    return ret
 
 def clear():
      _ = lambda: os.system('clear') #on Linux System
 
-for i in range(20):
-    os.system('cls' if os.name=='nt' else 'clear')
-    print(str(i))
-    print_image()
+for i in range(4):
+    # os.system('cls' if os.name=='nt' else 'clear')
+    # print(str(i))
+    out_str = print_image()
+    print(str(i)  + " --->\n" + out_str)
+    # Image
+    img = Image.new("RGBA", (640, 480), (47, 60, 99))
+    font = ImageFont.truetype("Inconsolata-Regular.ttf", 12)
+    # w, h = ImageDraw.ImageDraw.textsize(out_str, font)
+    draw = ImageDraw.Draw(img)
+    #w, h = draw.textsize(out_str, font)
+    draw.multiline_text((20, 20), out_str, fill="white", font=font, anchor=None, spacing=0, align="left")
+
+    img.show()
     # Step background
     for y in range(height - 2, -1 , -1):
         for x in range(width):
@@ -183,5 +242,5 @@ for i in range(20):
     background[0] = []
     for k in range(width):
         background[0].append(' ')
-    for j in range(random.randint(5,10)):
+    for j in range(random.randint(2,5)):
         background[0][random.randint(0,width - 1)] = '*'
