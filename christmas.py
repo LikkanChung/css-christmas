@@ -10,6 +10,7 @@ foreground = []
 background = []
 mask = []
 output = []
+frames = []
 
 css_title_x_offset = 21
 css_title_y_offset = 20
@@ -217,12 +218,6 @@ def print_image():
         ret = ret + '\n'
 
     return ret
-
-def clear():
-     _ = lambda: os.system('clear') #on Linux System
-
-
-frames = []
 
 
 for i in range(frame_count):
